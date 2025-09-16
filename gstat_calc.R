@@ -7,7 +7,7 @@
 #         states (string): default all 50 states and DC
 #         queen (boolean): default TRUE
 # OUTPUTS:res (dataframe)
-#--- last updated: 12/16/2024
+#--- last updated: 8/31/2025
 gstat_calc <- function(df, queen, var, self_include = TRUE){
   
   #subsetting to determine how many tracts fall within county, cbsa, or both
@@ -35,5 +35,6 @@ gstat_calc <- function(df, queen, var, self_include = TRUE){
   return(gstatFIN)
   
 }
+
 
 
