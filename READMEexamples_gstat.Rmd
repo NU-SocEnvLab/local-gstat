@@ -1,0 +1,125 @@
+---
+title: "Examples for the Gstat repository"
+author: "Cyanna McGowan"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(spdep)
+library(censusapi)
+library(tidycensus)
+library(tigris)
+library(tidyverse)
+library(sf)
+library(dplyr)
+library(table1)
+library(purrr)
+library(stringr)
+library(rappdirs)
+
+
+
+```
+
+This file will discuss the purpose of the primary functions of the files in the repository, and provide an example along the way. All necessary component functions and dependencies for the example can be loaded through ```source("Gstat_functionFarm.R")``` after downloading the R files in the repository.
+
+The purpose of these files are to make it easier to calculate the local Getis-Ord Gi Statistic (G-stat) for various years, racial groups, and geographic levels across the all 50 states and DC.
+
+**Features:**
+
+- Selection of racial/ethnic groups both Hispanic and non-Hispanic
+- Selection of either tract or block group level estimates
+- Core-based Statistical area (CBSA) geography as the larger areal unit
+- County geography as the larger areal unit when tract/block group does not align with a CBSA
+- Selection of any 5-year American Community Survey (ACS) from 2010 until present for counts of racial/ethnic group, geography of tract/block group, and geography of CBSA
+- Selection of either queen or rook contiguity
+- Ability to loop through each CBSA in the US in one function call
+
+## Before you begin
+
+To be able to work with the tidycensus package, users must also ensure that tidyverse is installed, and set a Census API key formatted in quotes.
+A key can be obtained from http://api.census.gov/data/key_signup.html. For use in future sessions, set install=TRUE. Users may also instruct tigris to download needed shapefiles to a chache directory rather than a temporary directory by default with tigris_use_cache = TRUE. This is especially useful for census years and geographies that the user plans to use often. 
+
+
+```{r API key, eval = TRUE}
+
+census_api_key("API KEY GOES HERE", install= TRUE )
+
+options(tigris_use_cache = TRUE)
+
+```
+
+## Getting Started
+
+First, load all functions and dependencies after downloading all repository files
+
+```{r, eval = TRUE}
+
+source("Gstat_functionfarm.R")
+
+```
+
+
+Below are variable names of the racial/ethnic groups available to be loaded. All census variables are sourced from ACS table "B03002: Total Population". Users may select one or more of the following racial/ethnic groups for each function call: 
+
+- Non-Hispanic Black adults: "nhBlack_p"
+- Non-Hispanic White adults: "nhWhite_p"
+- Non-Hispanic American Indian and Alaska Native adults: "nhNative_p"
+- Non-Hispanic Asian adults: "nhAsian_p"
+- Non-Hispanic Native Hawaiian and other Pacific Islander adults: "nhHIPI_p"
+- Hispanic adults: "Hispanic_p"
+- Hispanic White adults: "HisWhite_p"
+- Hispanic Black adults: "HispBlack_p"
+- Hispanic American Indian and Alaska Native adults: "HispNative_p"
+- Hispanic Asian adults: "HispAsian_p"
+- Hispanic Native Hawaiian and other Pacific Islander adults: "HispHIPI_p"
+
+
+## Generating data
+
+| Parameter | Type | Details |
+|----------|-------|---------|
+| geoType | string | Character string of "tract" for census tract or "cbg" for block group |
+| endYear | integer | Last year of 5-year ACS |
+| raceGroups | string | Character string of the selected racial/ethnic group(s) in tract/block from above options | 
+| queen | boolean | TRUE for queen contiguity and FALSE for rook contiguity |
+
+
+```{r, eval = TRUE, include=FALSE}
+
+dat <- gstat(geoType     = "TRACT OR CBG GOES HERE" ,
+              endYear    = "LAST YEAR OF 5-YEAR ACS GOES HERE" ,
+              raceGroups =  "RACE GROUP(S) OF INTEREST GOES HERE" ,
+              queen      = TRUE) 
+
+
+```
+
+This function takes in a geographic level (either "tract" or "cbg"/block group), a value representing the last year of 5-year ACS, $endYear$, one or more racial/ethnic groups, $raceGroups$, and contiguity, $queen$. The function returns Gstatistic values and number of neighbors at the geographic level selected for each racial/ethnic group specified in $raceGroups$. If multiple years, geographic levels, or each contiguity weight are desired, this requires a new function call for each change in one of those parameters. 
+
+The output is a dataset consisting of $FIPSID$, a FIPS code representing each tract/block group, $Gstat$ and number of neighbors variables for each racial/ethnic group selected in the function call. The number of neighbors, $nneigh$, used for each tract is determined by its contiguity weight. Queen contiguity will include tracts that share an edge or corner (common vertex) with the focal tract; Rook contiguity will include tracts that share a common edge only with the focal tract. 
+
+Here is a look at the structure of the dataset.
+
+```{r strGstat}
+
+str(dat) 
+
+```
+
+## Usage notes
+
+Core based statistical areas are not currently available for years prior to 2010. Due to this 2011 is the earliest year that can be used in $endYear$, representing the 2007-2011 5-year ACS.
+
+The $endYear$ 2022 may give issue depending on when/if the Census Bureau updates CBSA geometry, it is currently not available for 2022. Suggest that users either use $endYear$ 2021 or 2023 to work around this issue.
+
+The Census Bureau site that hosts shapefiles will occasionally not be able to handle current traffic. This may result in an error indicating the geography layer cannot be opened. Suggest that users try again later when the site may be less overloaded.
+
+All $endYear$s before 2019 will be in 2010 geogrpahic boundaries, while those from 2020 onward will use 2020 geographic boundaries.
+
+ 
+
+
