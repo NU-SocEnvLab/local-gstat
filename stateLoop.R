@@ -1,4 +1,4 @@
-#Next, this function will loop through each state in statelist and compile all 
+#This function will loop through each state in statelist and compile all 
 #census vaiables at geographic leavel of interest. It will then create proportion estimates for each 
 #population in the variable list. If there is zero population in the tract, proportion estimate will be 
 #set to 0 and handled later. Finally it will retain only the populations of interest.
@@ -38,3 +38,4 @@ stateLoop <-function(geo, year, stateList= stateList, vars= racevar, sum_var="B0
                                    HispAsian_p, HispHIPI_p, summary_est))
   return(est30)
 }
+
