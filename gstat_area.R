@@ -1,8 +1,9 @@
 #--- function: gstat_area
-# OBJECTIVE:
-# INPUTS:
-# OUTPUTS:
-#--- last updated: 12/5/2024
+# OBJECTIVE: to take census tracts/blaock groups with population > 0, calculate wieght matrix, identifiy data issues, 
+# and loop through every CBSA/County available in the data to calculate the gstat and number of neighbors.
+# INPUTS: data from ```gstat.r```
+# OUTPUTS: dataframe of gstats and number of neighbors for each census tract/black group
+#--- last updated: 8/31/2025
 gstat_area <- function(dat, codeName, queen, variable_of_int, self_include = TRUE){
   # naming the variable codename whether it is cbsa or county
   names(dat)[names(dat) == codeName] <- "codeName"
@@ -103,5 +104,6 @@ gstat_area <- function(dat, codeName, queen, variable_of_int, self_include = TRU
   
   return(cbsaFIN)
 }
+
 
 
