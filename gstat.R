@@ -6,7 +6,7 @@
 #         states (string): default all 50 states and DC
 #         queen (boolean): default TRUE
 # OUTPUTS:res (dataframe)
-#--- last updated: 12/5/2024
+#--- last updated: 8/31/2025
 
 gstat <- function(geoType, endYear, raceGroups, states = stateList, queen = TRUE){
   # obtaining proportions for each race group for all census tracts in the states listed
@@ -48,4 +48,5 @@ gstat <- function(geoType, endYear, raceGroups, states = stateList, queen = TRUE
   
   return(res)
 }
+
 
